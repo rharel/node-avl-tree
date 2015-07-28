@@ -3,24 +3,22 @@ _right = 1
 _sibling = (i) -> 1 - i
 _swap = (a, b) -> b = [a, a = b][0]
 
-class AVLTree
-  constructor:
-    (@key = 0,
-     @value = null,
-     @comparator = ((a, b) -> a - b)) ->
-       @parent = null
-       @_children = [null, null]
-       @_height = 1
-       @_balance = 0
+class AVLNode
+  constructor: (@key = 0, @value = null) ->
+    @parent = null
+    @_children = [null, null]
+    @_height = 1
+    @_balance = 0
 
   left: -> @_children[_left]
   right: -> @_children[_right]
-  root: -> if @is_root() then this else @parent.root()
   height: -> @_height
   balance: -> @_balance
 
   is_root: -> !@parent?
   is_leaf: -> !@left()? and !@right()?
+
+  _is_balanced: -> Math.abs(@_balance) < 2
 
   _debug_string: ->
     s = ''
@@ -61,14 +59,10 @@ class AVLTree
       return null
 
   _connect_child: (c, i) ->
-    ex_c = @_children[i]
     @_children[i] = c
     if c?
-      ex_p = c.parent
       c.parent = this
-
     @_update()
-    return [ex_c, ex_p]
 
   _rotate_XX: (i) ->
     j = _sibling(i)
@@ -89,54 +83,76 @@ class AVLTree
     c._connect_child(b, i)
     a._connect_child(c, i)
 
-  _restore_balance: ->
-    if @_balance is 2
-      if @left()._balance is -1
-        @_rotate_XY(_left)
-      @_rotate_XX(_left)
-    else if @_balance is -2
-      if @right()._balance is 1
-        @_rotate_XY(_right)
-      @_rotate_XX(_right)
 
-  _restore_balance_recursively: ->
-    @_update()
-    @_restore_balance()
-    @parent?._restore_balance_recursively()
+class AVLTree
+  constructor: (comparator = ((a, b) -> a - b)) ->
+     @_comparator = comparator
+     @_root = null
 
-  search: (key) -> return @root().search_(key)
-  search_: (key) ->
-    c = @comparator(@key, key)
-    if c is 0 or
-      (c > 0 and !@left()?) or
-      (c < 0 and !@right()?)
-        return this
-    else if c > 0
-      return @left().search_(key)
-    else
-      return @right().search_(key)
+  _restore_balance: (n) ->
+    n._update()
+    until (n.is_root() and n._is_balanced())
+      if n._balance is 2
+        if n.left()._balance is -1
+          n._rotate_XY(_left)
+        n._rotate_XX(_left)
+      else if n._balance is -2
+        if n.right()._balance is 1
+          n._rotate_XY(_right)
+        n._rotate_XX(_right)
 
-  insert: (key, value = null) -> return @root().insert_(key, value)
-  insert_: (key, value = null) ->
-    x = @search_(key)
-    c = @comparator(x.key, key)
-    if c is 0
+      if !n.is_root()
+        n = n.parent
+        n._update()
+
+    @_root = n
+
+  is_empty: -> !@_root?
+
+  search: (key) ->
+    if @is_empty()
       return null
 
-    n = new AVLTree(key, value, @comparator)
-    x._connect_child(n, if c > 0 then _left else _right)
-    x._restore_balance_recursively()
+    n = @_root
+    q = null
+    while n?
+      q = n
+      c = @_comparator(q.key, key)
+      if c is 0
+        return q
+      else if c > 0
+        n = n.left()
+      else
+        n = n.right()
 
-    return n
+    return q
 
-  delete: (key) -> return @root().delete_(key)
-  delete_: (key) ->
-    x = @search_(key)
-    c = @comparator(x.key, key)
+  insert: (key, value = null) ->
+    if @is_empty()
+      return @_root = new AVLNode(key, value)
+
+    x = @search(key)
+    c = @_comparator(x.key, key)
+    if c is 0
+      return null
+    else
+      n = new AVLNode(key, value)
+      x._connect_child(n, if c > 0 then _left else _right)
+      @_restore_balance(x)
+      return n
+
+  delete: (key) ->
+    if @is_empty()
+      return null
+
+    x = @search(key)
+    c = @_comparator(x.key, key)
     if c isnt 0
       return null
     else if x.left()? and x.right()?
-      y = x.left().search_(@key)
+      subtree = new AVLTree(@_comparator);
+      subtree._root = x.left()
+      y = subtree.search(x.key)
       x._swap_relatives(y)
       y._update()
 
@@ -144,9 +160,10 @@ class AVLTree
       if x.left()?
         x.parent._connect_child(x.left(), _right)
       else
-        x.parent._children[x.parent._index_of(x)] = null
+        x.parent._connect_child(null, x.parent._index_of(x))
 
-    x.parent?._restore_balance_recursively()
+    if x.parent?
+      @_restore_balance(x.parent)
 
     v = x.value
     x._invalidate()
