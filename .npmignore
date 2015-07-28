@@ -1,0 +1,13 @@
+# These files are not published to NPM
+
+# Project-specific excludes
+test
+*.coffee
+src/*.coffee
+
+.travis.yml
+coffeelint.json
+
+# Code editor-specific excludes
+*.sublime-*
+.idea
