@@ -109,7 +109,8 @@ describe 'insertion', ->
     result = (t.insert(i, '' + i) for i in [1..7])
     [LL, L, LR, root, RL, R, RR] = result
 
-    assert.it_should_match_key_and_value(result[i - 1], i, '' + i) for i in [1..7]
+    assert.it_should_match_key_and_value(result[i - 1], i, '' + i) \
+      for i in [1..7]
 
     assert.it_should_be_the_root(root, t)
     assert.it_should_have_children(root, L, R)

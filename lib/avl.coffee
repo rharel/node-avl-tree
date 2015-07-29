@@ -193,8 +193,8 @@ class AVLNode
 ###
 class AVLTree
   constructor: (comparator = ((a, b) -> a - b)) ->
-     @_comparator = comparator
-     @root = null
+    @_comparator = comparator
+    @root = null
 
   _restore_balance: (n) ->
     n._update()

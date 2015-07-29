@@ -18,7 +18,7 @@
   },
   "empty_constructor_needs_parens": {
     "name": "empty_constructor_needs_parens",
-    "level": "error"
+    "level": "ignore"
   },
   "eol_last": {
     "name": "eol_last",
