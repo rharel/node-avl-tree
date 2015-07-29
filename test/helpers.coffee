@@ -1,3 +1,10 @@
+###
+  @author Raoul Harel
+  @license The MIT license (../LICENSE.txt)
+  @copyright Raoul Harel 2015
+  @url rharel/node-avl-tree on GitHub
+###
+  
 exports.it_should_be_empty = (tree) ->
   it 'should have no root', ->
     (tree.root?).should.be.equal false

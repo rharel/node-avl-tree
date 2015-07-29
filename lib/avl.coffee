@@ -1,3 +1,18 @@
+###
+  @author Raoul Harel
+  @license The MIT license (../LICENSE.txt)
+  @copyright Raoul Harel 2015
+  @url rharel/node-avl-tree on GitHub
+###
+
+###
+  Naming Convention Used
+  ======================
+
+  Any object, method, or argument whose name begins with an _underscore
+  is to be considered a private implementation detail.
+###
+
 _left = 0
 _right = 1
 _sibling = (i) -> 1 - i
@@ -6,6 +21,17 @@ _swap = (a, b, p) ->
   a[p] = b[p]
   b[p] = tmp
 
+###
+  AVL-nodes are the building block of the tree. Each node is identified by
+  its key and value. The key is used to dictate an ordering among nodes.
+  The value is an easy way for users of the tree to tie their own data to a
+  node.
+
+  You can query nodes for their properties as well as use them to traverse
+  the tree. The root node yields null when queried for its parent and
+  nodes with less than two children will yield null when queried for
+  a missing child.
+###
 class AVLNode
   constructor: (@key, @value = null) ->
     @parent = null
@@ -79,13 +105,34 @@ class AVLNode
     else
       return null
 
-  _connect_child: (c, i, do_update = true) ->
+  _connect_child: (c, i) ->
     @_children[i] = c
     if c?
       c.parent = this
-    if do_update
-      @_update()
+    @_update()
 
+  ###
+    @brief
+      Performs either a left-left (LL) or right-right (RR) rotation.
+
+    @param  i   _left for LL, _right for RR
+
+    @details
+      Restores balance to a chain of same-side nodes starting at 'this' node.
+
+      @example
+        For the LL case:
+        Let this node be 'a', a.left be 'b', and b.left be 'c', then a _left
+        XX rotation will transform (1) to (2):
+        (1)       |(2)
+             a    |       b
+            / \   |      / \
+           b  aR  |    c     a
+          / \     |   / \   / \
+         c   z    |  cL cR z  aR
+        / \       |
+       cL cR      |
+  ###
   _rotate_XX: (i) ->
     j = _sibling(i)
     a = this; b = a._children[i]; p = a.parent
@@ -97,6 +144,29 @@ class AVLNode
     else
       b.parent = null
 
+  ###
+    @brief
+      Performs either a left-right (LR) or right-left (RL) rotation.
+
+    @param  i   _left for LR, _right for RL
+
+    @details
+      Transforms either an LR-imbalance to an LL one, or a RL-imbalance to
+      an RR one. @see _rotate_XX()
+
+      @example
+        For the LR case:
+        Let this node be 'a', a.left be 'b', and b.right be 'c', then a _left
+        XY rotation will transform (1) to (2):
+        (1)        |(2)
+             a     |        a
+            / \    |       / \
+           b   aR  |      c  aR
+          / \      |     / \
+         bL  c     |    b  cR
+            / \    |   / \
+           cL cR   |  bL cL
+  ###
   _rotate_XY: (i) ->
     j = _sibling(i)
     a = this; b = a._children[i]; c = b._children[j]
@@ -106,6 +176,21 @@ class AVLNode
     a._connect_child(c, i)
 
 
+###
+  The AVL-tree is the interface with which the user manipulates the tree
+  structure.
+
+  The three principal operations available are: insertion, removal, and query.
+  The initial tree directly after instantiation will be empty and have a
+  null root. New nodes can then be inserted and the tree will sort them
+  according to their keys. The ordering is defined by the comparator used.
+
+  The default comparator assumes keys are numbers and imposes an ascending
+  order. User made comparators can be supplied during instantiation.
+  A comparator is a function taking two keys A and B, and that returns
+  a positive number when A > B, a negative number when A < B, and zero when
+  A == B.
+###
 class AVLTree
   constructor: (comparator = ((a, b) -> a - b)) ->
      @_comparator = comparator
@@ -131,6 +216,11 @@ class AVLTree
 
   is_empty: -> !@root?
 
+  ###
+    Traverses down the tree in search of a node with the given key,
+    if none is found, yields the last node visited or null if the tree
+    is empty.
+  ###
   search: (key) ->
     if @is_empty()
       return null
@@ -149,6 +239,15 @@ class AVLTree
 
     return q
 
+  ###
+    Inserts a new node with given key and value into the tree and returns
+    a reference to the newly created node or null if a node with an equal
+    key already exists.
+
+    The reference to the inserted node remains valid until the node is removed.
+    A removed node becomes invalid, and has all its properties (including
+    its key and value) be set to null.
+  ###
   insert: (key, value = null) ->
     if @is_empty()
       return @root = new AVLNode(key, value)
@@ -163,6 +262,13 @@ class AVLTree
       @_restore_balance(x)
       return n
 
+  ###
+    Removes a node with given key from the tree and returns its value
+    or null if no such node exists.
+
+    Any reference to a removed node becomes invalid. An invalid node has all
+    its properties (including its key and value) be set to null.
+  ###
   remove: (key) ->
     if @is_empty()
       return null

@@ -1,7 +1,15 @@
+###
+  @author Raoul Harel
+  @license The MIT license (../LICENSE.txt)
+  @copyright Raoul Harel 2015
+  @url rharel/node-avl-tree on GitHub
+###
+
 should = require 'should'
-AVLTree = require '../lib/avl'
-assert = require './helpers'
 shuffle = require 'shuffle-array'
+
+assert = require './helpers'
+AVLTree = require '../lib/avl'
 
 describe 'sorting', ->
   test_case = (name, comparator, sorted, query) ->
