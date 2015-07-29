@@ -1,7 +1,7 @@
 ###
   @author Raoul Harel
   @license The MIT license (../LICENSE.txt)
-  @copyright Raoul Harel 2015
+  @copyright 2015 Raoul Harel
   @url rharel/node-avl-tree on GitHub
 ###
 
