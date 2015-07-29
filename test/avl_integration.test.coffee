@@ -8,7 +8,7 @@
 should = require 'should'
 shuffle = require 'shuffle-array'
 
-assert = require './helpers'
+assert = require './helpers.test'
 AVLTree = require '../lib/avl'
 
 describe 'sorting', ->

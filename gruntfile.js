@@ -15,17 +15,41 @@ module.exports = function(grunt) {
     source_files: [ '<%= lib_dir %>**/*.coffee' ],
     test_files: '<%= test_dir %>**/*.test.coffee',
 
+    
     coffeelint: {
       options: {
         configFile: 'coffeelint.json'
       },
       all: ['<%= source_files %>', '<%= test_files %>']
+    },
+
+    coffee: {
+      dev: {
+        options: {
+          sourceMap: true
+        },
+        files: [
+          {
+            expand: true,
+            src: ['<%= source_files %>'],
+            ext: '.js'
+          },
+          {
+            expand: true,
+            src: ['<%= test_files %>'],
+            ext: '.js'
+          }
+        ]
+      },
+      release: {
+        files: {
+          '<%= dist_dir %>/avl.js': '<%= lib_dir %>/avl.coffee'
+        }
+      }
     }
   };
 
   require('load-grunt-tasks')(grunt);
-
-  grunt.registerTask('lint', ['coffeelint']);
 
   return grunt.initConfig(config);
 };

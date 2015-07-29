@@ -1,7 +1,6 @@
 # Project-specific excludes
 *.js
 !gruntfile.js
-
 *.js.map
 
 # Platform-specific excludes

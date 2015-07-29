@@ -7,7 +7,7 @@
 
 should = require 'should'
 
-assert = require './helpers'
+assert = require './helpers.test'
 AVLTree = require '../lib/avl'
 
 describe 'initialization', ->

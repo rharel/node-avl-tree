@@ -26,15 +26,13 @@
     "grunt-mocha-cli": "~1.14.0",
     "load-grunt-tasks": "~3.2.0",
     "coffee-script": "~1.9.3",
-    "should": "~7.0.2"
+    "should": "~7.0.2",
+    "shuffle-array": "^0.1.0"
   },
   "keywords": [
     "avl",
     "tree",
     "self balancing",
     "adt"
-  ],
-  "dependencies": {
-    "shuffle-array": "^0.1.0"
-  }
+  ]
 }
