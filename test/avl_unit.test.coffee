@@ -1,79 +1,24 @@
 should = require 'should'
-AVLTree = require '../src/avl'
+AVLTree = require '../lib/avl'
+assert = require './helpers'
 
-it_should_match_key_and_value = (node, key, value) ->
-  it 'should match the key', ->
-    node.key.should.be.equal key
-  it 'should match the value', ->
-    node.value.should.be.equal value
 
-it_should_be_a_leaf = (node) ->
-  it 'should have no children', ->
-    (node.left()?).should.be.equal false
-    (node.right()?).should.be.equal false
-  it 'should be aware that it is a leaf', ->
-    node.is_leaf().should.be.equal true
-  it 'should have expected height', ->
-    node.height().should.be.equal 1
-  it 'should have expected balance', ->
-    node.balance().should.be.equal 0
+describe 'initialization', ->
+  describe 'default', ->
+    t = new AVLTree
 
-it_should_be_the_root = (node, tree) ->
-  it 'should be set as the root', ->
-    tree._root.should.be.equal node
-  it 'should have no parent', ->
-    (node.parent?).should.be.equal false
-  it 'should be aware that it is the root', ->
-    node.is_root().should.be.equal true
+    assert.it_should_be_empty(t)
 
-it_should_have_children = (node, L = null, R = null) ->
-  it 'should ' + (if L? then 'have' else 'have no') + ' left child', ->
-    (node.left()?).should.be.equal L?
-  it 'should ' + (if R? then 'have' else 'have no') + ' right child', ->
-    (node.right()?).should.be.equal R?
-  if L?
-    it 'should have left child know its parent', ->
-      L.parent.should.be.equal node
-  if R?
-    it 'should have right child know its parent', ->
-      R.parent.should.be.equal node
-  if !L? and !R?
-    it 'should be aware that it is a leaf', ->
-      node.is_leaf().should.be.equal true
-  else
-    it 'should be aware that is is not a leaf', ->
-      node.is_leaf().should.be.equal false
-
-it_should_have_props = (node, height, balance) ->
-  it 'should have expected height', ->
-    node.height().should.be.equal height
-  it 'should have expected balance', ->
-    node.balance().should.be.equal balance
-
-it_should_be_invalid = (node) ->
-  it 'should isolate node', ->
-    (node.parent?).should.be.equal false
-    (node.left()?).should.be.equal false
-    (node.right()?).should.be.equal false
-  it 'should invalidate node\'s key', ->
-    (node.key?).should.be.equal false
-  it 'should invalidate node\'s value', ->
-    (node.value?).should.be.equal false
-
-describe 'sanity', ->
-  describe 'default initialization', ->
-    t = new AVLTree()
-
-    it 'should be empty', ->
-      t.is_empty().should.be.equal true
     it 'should have a simple comparator', ->
       t._comparator(3, 2).should.be.above 0
       t._comparator(2, 3).should.be.below 0
       t._comparator(3, 3).should.be.equal 0
 
-  describe 'user initialization', ->
+  describe 'user arguments', ->
     comparator = (a, b) -> b - a
     t = new AVLTree(comparator)
+
+    assert.it_should_be_empty(t)
 
     it 'should accept user comparator', ->
       t._comparator.should.be.equal comparator
@@ -83,9 +28,9 @@ describe 'insertion', ->
     t = new AVLTree
     a = t.insert(0, '0')
 
-    it_should_match_key_and_value(a, 0, '0')
-    it_should_be_the_root(a, t)
-    it_should_be_a_leaf(a)
+    assert.it_should_match_key_and_value(a, 0, '0')
+    assert.it_should_be_the_root(a, t)
+    assert.it_should_be_a_leaf(a)
 
   it 'should have a default value of null', ->
     t = new AVLTree
@@ -99,31 +44,31 @@ describe 'insertion', ->
     (b?).should.be.equal false
 
   describe 'balanced', ->
-    describe 'into root[height = 1].left', ->
+    describe 'into left', ->
       t = new AVLTree
       a = t.insert(2, '2')
       b = t.insert(1, '1')
 
-      it_should_match_key_and_value(a, 2, '2')
-      it_should_be_the_root(a, t)
-      it_should_have_children(a, b, null)
-      it_should_have_props(a, 2, 1)
+      assert.it_should_match_key_and_value(a, 2, '2')
+      assert.it_should_be_the_root(a, t)
+      assert.it_should_have_children(a, b, null)
+      assert.it_should_have_props(a, 2, 1)
 
-      it_should_match_key_and_value(b, 1, '1')
-      it_should_be_a_leaf(b)
+      assert.it_should_match_key_and_value(b, 1, '1')
+      assert.it_should_be_a_leaf(b)
 
-    describe 'into root[height = 1].right', ->
+    describe 'into right', ->
       t = new AVLTree
       a = t.insert(1, '1')
       b = t.insert(2, '2')
 
-      it_should_match_key_and_value(a, 1, '1')
-      it_should_be_the_root(a, t)
-      it_should_have_children(a, null, b)
-      it_should_have_props(a, 2, -1)
+      assert.it_should_match_key_and_value(a, 1, '1')
+      assert.it_should_be_the_root(a, t)
+      assert.it_should_have_children(a, null, b)
+      assert.it_should_have_props(a, 2, -1)
 
-      it_should_match_key_and_value(b, 2, '2')
-      it_should_be_a_leaf(b)
+      assert.it_should_match_key_and_value(b, 2, '2')
+      assert.it_should_be_a_leaf(b)
 
   describe 'imbalanced', ->
     test_case = (name, x, y, z) ->
@@ -134,18 +79,18 @@ describe 'insertion', ->
         b = t.insert(y, vy)
         c = t.insert(z, vz)
 
-        it_should_match_key_and_value(a, x, vx)
-        it_should_match_key_and_value(b, y, vy)
-        it_should_match_key_and_value(c, z, vz)
+        assert.it_should_match_key_and_value(a, x, vx)
+        assert.it_should_match_key_and_value(b, y, vy)
+        assert.it_should_match_key_and_value(c, z, vz)
 
         [L, root, R] = [a, b, c].sort((p, q) -> p.key - q.key)
 
-        it_should_be_the_root(root, t)
-        it_should_have_children(root, L, R)
-        it_should_have_props(root, 2, 0)
+        assert.it_should_be_the_root(root, t)
+        assert.it_should_have_children(root, L, R)
+        assert.it_should_have_props(root, 2, 0)
 
-        it_should_be_a_leaf(L)
-        it_should_be_a_leaf(R)
+        assert.it_should_be_a_leaf(L)
+        assert.it_should_be_a_leaf(R)
 
     test_case('LL', 3, 2, 1)
     test_case('LR', 3, 1, 2)
@@ -157,19 +102,19 @@ describe 'insertion', ->
     result = (t.insert(i, '' + i) for i in [1..7])
     [LL, L, LR, root, RL, R, RR] = result
 
-    it_should_match_key_and_value(result[i - 1], i, '' + i) for i in [1..7]
+    assert.it_should_match_key_and_value(result[i - 1], i, '' + i) for i in [1..7]
 
-    it_should_be_the_root(root, t)
-    it_should_have_children(root, L, R)
-    it_should_have_props(root, 3, 0)
+    assert.it_should_be_the_root(root, t)
+    assert.it_should_have_children(root, L, R)
+    assert.it_should_have_props(root, 3, 0)
 
-    it_should_have_children(L, LL, LR)
-    it_should_have_props(L, 2, 0)
+    assert.it_should_have_children(L, LL, LR)
+    assert.it_should_have_props(L, 2, 0)
 
-    it_should_have_children(R, RL, RR)
-    it_should_have_props(R, 2, 0)
+    assert.it_should_have_children(R, RL, RR)
+    assert.it_should_have_props(R, 2, 0)
 
-    it_should_be_a_leaf(node) for node in [LL, LR, RL, RR]
+    assert.it_should_be_a_leaf(node) for node in [LL, LR, RL, RR]
 
 describe 'search', ->
   describe 'in an empty tree', ->
@@ -189,7 +134,7 @@ describe 'search', ->
           do (q) ->
             describe "search(#{q})", ->
               r = t.search(q)
-              it_should_match_key_and_value(r, i, '' + i)
+              assert.it_should_match_key_and_value(r, i, '' + i)
 
   describe 'in a tree containing the target value', ->
     t = new AVLTree
@@ -199,13 +144,13 @@ describe 'search', ->
       do (i) ->
         describe "search(#{i})", ->
           r = t.search(i)
-          it_should_match_key_and_value(r, i, '' + i)
+          assert.it_should_match_key_and_value(r, i, '' + i)
 
 describe 'deletion', ->
 
   describe 'in an empty tree', ->
     t = new AVLTree
-    r = t.delete(0)
+    r = t.remove(0)
 
     it 'should return null', ->
       (r?).should.be.equal false
@@ -213,7 +158,7 @@ describe 'deletion', ->
   describe 'from a tree missing the deleted value', ->
     t = new AVLTree
     a = t.insert(1, '1')
-    r = t.delete(0)
+    r = t.remove(0)
 
     it 'should return null', ->
       (r?).should.be.equal false
@@ -221,105 +166,119 @@ describe 'deletion', ->
   describe 'from single node tree', ->
     t = new AVLTree
     x = t.insert(1, '1')
-    r = t.delete(1)
+    r = t.remove(1)
 
     it 'should return deleted node\'s value', ->
       r.should.be.equal '1'
 
-    it_should_be_invalid(x)
+    assert.it_should_be_invalid(x)
+    assert.it_should_be_empty(t)
 
   describe 'balanced', ->
-    describe 'from root[height = 1].left', ->
-      t = new AVLTree
-      a = t.insert(2, '2')
-      x = t.insert(1, '1')
-      r = t.delete(1)
+    describe 'from tree.length == 2', ->
+      test_case = (name, x, y, delete_root) ->
+        describe name, ->
+          t = new AVLTree
+          a = t.insert(x, '' + x)
+          b = t.insert(y, '' + y)
+          d_key = if delete_root then x else y
+          d_value = '' + d_key
+          d_node = if delete_root then a else b
+          r = t.remove(d_key)
 
-      it 'should return deleted node\'s value', ->
-        r.should.be.equal '1'
+          it 'should return deleted node\'s value', ->
+            r.should.be.equal d_value
 
-      it_should_be_invalid(x)
-      it_should_be_the_root(a, t)
-      it_should_be_a_leaf(a)
+          root = if delete_root then b else a
+          assert.it_should_be_invalid(d_node)
+          assert.it_should_be_the_root(root, t)
+          assert.it_should_be_a_leaf(root)
 
-    describe 'from root[height = 1].right', ->
+      test_case('from root --> L deleting L', 2, 1, false)
+      test_case('from root --> L deleting root', 2, 1, true)
+      test_case('from root --> R deleting R', 1, 2, false)
+      test_case('from root --> R deleting root', 1, 2, true)
+
+    describe 'from tree.length == 3 deleting root', ->
       t = new AVLTree
       a = t.insert(1, '1')
       x = t.insert(2, '2')
-      r = t.delete(2)
+      b = t.insert(3, '3')
+      r = t.remove(2)
 
       it 'should return deleted node\'s value', ->
         r.should.be.equal '2'
 
-      it_should_be_invalid(x)
-      it_should_be_the_root(a, t)
-      it_should_be_a_leaf(a)
+      assert.it_should_be_invalid(x)
+      assert.it_should_be_the_root(a, t)
+      assert.it_should_have_children(a, null, b)
+      assert.it_should_be_a_leaf(b)
 
   describe 'imbalanced', ->
     describe 'LL', ->
       t = new AVLTree
       [x, R, root, L] = (t.insert(i, '' + i) for i in [4, 3, 2, 1])
-      r = t.delete(4)
+      r = t.remove(4)
 
       it 'should return deleted node\'s value', ->
         r.should.be.equal '4'
 
-      it_should_be_invalid(x)
+      assert.it_should_be_invalid(x)
 
-      it_should_be_the_root(root, t)
-      it_should_have_children(root, L, R)
-      it_should_have_props(root, 2, 0)
+      assert.it_should_be_the_root(root, t)
+      assert.it_should_have_children(root, L, R)
+      assert.it_should_have_props(root, 2, 0)
 
-      it_should_be_a_leaf(L)
-      it_should_be_a_leaf(R)
+      assert.it_should_be_a_leaf(L)
+      assert.it_should_be_a_leaf(R)
 
     describe 'RR', ->
       t = new AVLTree
       [x, L, root, R] = (t.insert(i, '' + i) for i in [1, 2, 3, 4])
-      r = t.delete(1)
+      r = t.remove(1)
 
       it 'should return deleted node\'s value', ->
         r.should.be.equal '1'
 
-      it_should_be_invalid(x)
+      assert.it_should_be_invalid(x)
 
-      it_should_be_the_root(root, t)
-      it_should_have_children(root, L, R)
-      it_should_have_props(root, 2, 0)
+      assert.it_should_be_the_root(root, t)
+      assert.it_should_have_children(root, L, R)
+      assert.it_should_have_props(root, 2, 0)
 
-      it_should_be_a_leaf(L)
-      it_should_be_a_leaf(R)
+      assert.it_should_be_a_leaf(L)
+      assert.it_should_be_a_leaf(R)
 
     describe 'RL', ->
       t = new AVLTree
       [x, L, R, root] = (t.insert(i, '' + i) for i in [1, 2, 4, 3])
-      r = t.delete(1)
+      r = t.remove(1)
 
       it 'should return deleted node\'s value', ->
         r.should.be.equal '1'
 
-      it_should_be_invalid(x)
+      assert.it_should_be_invalid(x)
 
-      it_should_be_the_root(root, t)
-      it_should_have_children(root, L, R)
-      it_should_have_props(root, 2, 0)
+      assert.it_should_be_the_root(root, t)
+      assert.it_should_have_children(root, L, R)
+      assert.it_should_have_props(root, 2, 0)
 
-      it_should_be_a_leaf(L)
-      it_should_be_a_leaf(R)
+      assert.it_should_be_a_leaf(L)
+      assert.it_should_be_a_leaf(R)
 
     describe 'LR', ->
       t = new AVLTree
       [x, R, L, root] = (t.insert(i, '' + i) for i in [4, 3, 1, 2])
-      r = t.delete(4)
+      r = t.remove(4)
 
       it 'should return deleted node\'s value', ->
         r.should.be.equal '4'
 
-      it_should_be_invalid(x)
+      assert.it_should_be_invalid(x)
 
-      it_should_be_the_root(root, t)
-      it_should_have_children(root, L, R)
-      it_should_have_props(root, 2, 0)
+      assert.it_should_be_the_root(root, t)
+      assert.it_should_have_children(root, L, R)
+      assert.it_should_have_props(root, 2, 0)
 
-      it_should_be_a_leaf(L)
-      it_should_be_a_leaf(R)
+      assert.it_should_be_a_leaf(L)
+      assert.it_should_be_a_leaf(R)

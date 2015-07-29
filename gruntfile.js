@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
   /* GRUNT CONFIGURATION */
   config = {
-    srcDir: 'src/',
+    srcDir: 'lib/',
     tstDir: 'test/',
     docDir: 'docs/',
     resDir: 'res/',

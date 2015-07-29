@@ -1,10 +1,13 @@
 _left = 0
 _right = 1
 _sibling = (i) -> 1 - i
-_swap = (a, b) -> b = [a, a = b][0]
+_swap = (a, b, p) ->
+  tmp = a[p]
+  a[p] = b[p]
+  b[p] = tmp
 
 class AVLNode
-  constructor: (@key = 0, @value = null) ->
+  constructor: (@key, @value = null) ->
     @parent = null
     @_children = [null, null]
     @_height = 1
@@ -43,12 +46,30 @@ class AVLNode
     @_height = 1 + Math.max(h_left, h_right)
     @_balance = h_left - h_right
 
-  _swap_relatives: (other) ->
-    if other isnt this
-      _swap(@parent, other.parent)
-      _swap(@_children, other._children)
-      _swap(@_height, other._height)
-      _swap(@_balance, other._balance)
+  _swap_parent: (other) ->
+    _swap(this, other, 'parent')
+    if this.parent is this then this.parent = other
+    if other.parent is other then other.parent = this
+
+  _swap_children: (other) ->
+    _swap(this, other, '_children')
+    for x in [[this, other], [other, this]]
+      do ->
+        [a, b] = x
+        for i in [_left, _right]
+          do ->
+            if a._children[i] is a
+              a._children[i] = b
+            else
+              a._children[i]?.parent = a
+
+  _swap: (other) ->
+    if other is this
+      return
+    @_swap_parent(other)
+    @_swap_children(other)
+    _swap(this, other, '_height')
+    _swap(this, other, '_balance')
 
   _index_of: (c) ->
     if @left() is c
@@ -58,11 +79,12 @@ class AVLNode
     else
       return null
 
-  _connect_child: (c, i) ->
+  _connect_child: (c, i, do_update = true) ->
     @_children[i] = c
     if c?
       c.parent = this
-    @_update()
+    if do_update
+      @_update()
 
   _rotate_XX: (i) ->
     j = _sibling(i)
@@ -87,7 +109,7 @@ class AVLNode
 class AVLTree
   constructor: (comparator = ((a, b) -> a - b)) ->
      @_comparator = comparator
-     @_root = null
+     @root = null
 
   _restore_balance: (n) ->
     n._update()
@@ -105,15 +127,15 @@ class AVLTree
         n = n.parent
         n._update()
 
-    @_root = n
+    @root = n
 
-  is_empty: -> !@_root?
+  is_empty: -> !@root?
 
   search: (key) ->
     if @is_empty()
       return null
 
-    n = @_root
+    n = @root
     q = null
     while n?
       q = n
@@ -129,7 +151,7 @@ class AVLTree
 
   insert: (key, value = null) ->
     if @is_empty()
-      return @_root = new AVLNode(key, value)
+      return @root = new AVLNode(key, value)
 
     x = @search(key)
     c = @_comparator(x.key, key)
@@ -141,7 +163,7 @@ class AVLTree
       @_restore_balance(x)
       return n
 
-  delete: (key) ->
+  remove: (key) ->
     if @is_empty()
       return null
 
@@ -150,20 +172,25 @@ class AVLTree
     if c isnt 0
       return null
     else if x.left()? and x.right()?
-      subtree = new AVLTree(@_comparator);
-      subtree._root = x.left()
+      subtree = new AVLTree(@_comparator)
+      subtree.root = x.left()
       y = subtree.search(x.key)
-      x._swap_relatives(y)
-      y._update()
+      x._swap(y)
 
     if !x.is_root()
+      i = x.parent._index_of(x)
       if x.left()?
-        x.parent._connect_child(x.left(), _right)
+        x.parent._connect_child(x.left(), i)
       else
-        x.parent._connect_child(null, x.parent._index_of(x))
-
-    if x.parent?
+        x.parent._connect_child(x.right(), i)
       @_restore_balance(x.parent)
+    else
+      if x.left()?
+        @root = x.left()
+        x.left().parent = null
+      else
+        @root = x.right()
+        x.right()?.parent = null
 
     v = x.value
     x._invalidate()
