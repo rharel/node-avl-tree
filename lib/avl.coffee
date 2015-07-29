@@ -302,5 +302,7 @@ class AVLTree
     x._invalidate()
     return v
 
-
-module.exports = AVLTree
+root = this
+if module?.exports?
+  module.exports = AVLTree
+root.AVLTree = AVLTree
