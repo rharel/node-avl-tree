@@ -97,6 +97,11 @@ module.exports = function(grunt) {
     }
   };
 
+  grunt.registerTask('build', [
+    'clean:dev',
+    'coffee:dev'
+  ]);
+  grunt.registerTask('test', ['mochacli:all']);
   grunt.registerTask('dev', [
     'coffeelint:all',
     'clean:dev',
@@ -109,6 +114,7 @@ module.exports = function(grunt) {
     'coffee:release',
     'uglify:release'
   ]);
+  grunt.registerTask('default', 'dev');
 
   require('load-grunt-tasks')(grunt);
 

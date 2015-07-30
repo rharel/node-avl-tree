@@ -29,6 +29,9 @@
     "should": "~7.0.2",
     "shuffle-array": "^0.1.0"
   },
+  "scripts": {
+    "test": "grunt test"
+  },
   "keywords": [
     "avl",
     "tree",
