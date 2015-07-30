@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rahrel/node-avl-tree.git"
+    "url": "https://github.com/rharel/node-avl-tree.git"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "/blob/master/LICENSE-MIT"
+      "url": "/LICENSE.txt"
     }
   ],
   "devDependencies": {
@@ -28,6 +28,9 @@
     "coffee-script": "~1.9.3",
     "should": "~7.0.2",
     "shuffle-array": "^0.1.0"
+  },
+  "scripts": {
+    "test": "grunt test"
   },
   "keywords": [
     "avl",
