@@ -16,6 +16,20 @@ module.exports = function(grunt) {
     test_files: '<%= test_dir %>**/*.test.coffee',
 
     clean: {
+      dev: {
+        src: [
+          '<%= lib_dir %>**/*.js',
+          '<%= lib_dir %>**/*.js.map',
+          '<%= test_dir %>**/*.js',
+          '<%= test_dir %>**/*.js.map'
+        ]
+      },
+      release: {
+        src: [
+          '<%= dist_dir %>**/*.js',
+          '<%= dist_dir %>**/*.js.map'
+        ]
+      },
       all: {
         src: [
           '<%= lib_dir %>**/*.js',
@@ -72,8 +86,29 @@ module.exports = function(grunt) {
         '<%= test_dir %>/avl_unit.test.js',
         '<%= test_dir %>/avl_integration.test.js'
       ]
+    },
+
+    uglify: {
+      release: {
+        files: {
+          '<%= dist_dir %>/avl.min.js': ['<%= dist_dir %>/avl.js']
+        }
+      }
     }
   };
+
+  grunt.registerTask('dev', [
+    'coffeelint:all',
+    'clean:dev',
+    'coffee:dev',
+    'mochacli:all'
+  ]);
+  grunt.registerTask('release', [
+    'coffeelint:all',
+    'clean:release',
+    'coffee:release',
+    'uglify:release'
+  ]);
 
   require('load-grunt-tasks')(grunt);
 

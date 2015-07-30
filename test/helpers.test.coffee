@@ -80,4 +80,4 @@ exports.arrays_are_equal = (a, b) ->
 
   (if a[i] isnt b[i] then return false) for i in [0...a.length]
 
-  return true;
+  return true
