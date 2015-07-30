@@ -93,12 +93,12 @@ t.insert(3, 'what');
 t.insert(1, 'hello');
 t.insert(4, 'a');
 
-result = []
+result = [];
 while (!t.is_empty()) {
     result.push(t.search(0).remove());
 }
 
-result.join()  // 'hello world what a beautiful day'
+result.join();  // 'hello world what a beautiful day'
 ```
 
 ## License
