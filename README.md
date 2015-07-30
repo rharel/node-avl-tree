@@ -1,5 +1,5 @@
 [![NPM Version](https://badge.fury.io/js/node-avl-tree.png)](https://npmjs.org/package/node-avl-tree)
-
+[![Build Status](https://travis-ci.org/rharel/node-avl-tree.svg)](https://travis-ci.org/rharel/node-avl-tree)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com)
 
 ## Installation
@@ -103,4 +103,4 @@ result.join()  // 'hello world what a beautiful day'
 
 ## License
 
-This software is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
+This software is licensed under the **MIT License**. See the [LICENSE](LICENSE.txt) file for more information.
