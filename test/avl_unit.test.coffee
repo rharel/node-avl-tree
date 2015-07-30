@@ -171,7 +171,7 @@ describe 'deletion', ->
     it 'should return null', ->
       (r?).should.be.equal false
 
-  describe 'from single node tree', ->
+  describe 'from single node tree by key', ->
     t = new AVLTree
     x = t.insert(1, '1')
     r = t.remove(1)
@@ -181,6 +181,31 @@ describe 'deletion', ->
 
     assert.it_should_be_invalid(x)
     assert.it_should_be_empty(t)
+
+  describe 'from single node tree by node', ->
+    t = new AVLTree
+    x = t.insert(1, '1')
+    r = x.remove()
+
+    it 'should return deleted node\'s value', ->
+      r.should.be.equal '1'
+
+    assert.it_should_be_invalid(x)
+    assert.it_should_be_empty(t)
+
+  describe 'from tree by invalid node', ->
+    t = new AVLTree
+    x = t.insert(1, '1')
+    b = t.insert(2, '2')
+    x.remove()
+    r = x.remove()
+
+    it 'should return null', ->
+      (r?).should.be.equal false
+
+    assert.it_should_be_invalid(x)
+    assert.it_should_be_the_root(b, t)
+    assert.it_should_be_a_leaf(b)
 
   describe 'balanced', ->
     describe 'from tree.length == 2', ->

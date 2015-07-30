@@ -24,7 +24,7 @@ describe 'sorting', ->
       result = []
       until t.is_empty()
         if verbose then console.log(t.root._debug_string() + '***')
-        result.push(t.remove(t.search(query).key))
+        result.push(t.search(query).remove())
       if verbose then console.log('output: ' + result)
 
       assert.it_should_be_empty(t)

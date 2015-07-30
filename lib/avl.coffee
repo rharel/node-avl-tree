@@ -33,7 +33,7 @@ _swap = (a, b, p) ->
   a missing child.
 ###
 class AVLNode
-  constructor: (@key, @value = null) ->
+  constructor: (@_tree, @key, @value = null) ->
     @parent = null
     @_children = [null, null]
     @_height = 1
@@ -46,6 +46,7 @@ class AVLNode
 
   is_root: -> !@parent?
   is_leaf: -> !@left()? and !@right()?
+  is_invalid: -> !@_tree?
 
   _is_balanced: -> Math.abs(@_balance) < 2
 
@@ -65,6 +66,7 @@ class AVLNode
     @_children[_right] = null
     @key = null
     @value = null
+    @_tree = null
 
   _update: ->
     h_left = if @left()? then @left()._height else 0
@@ -175,6 +177,18 @@ class AVLNode
     c._connect_child(b, i)
     a._connect_child(c, i)
 
+  ###
+    Removes the node from the tree and returns its value or null
+    if the node is invalid (i.e. it was already removed).
+    @see AVLTree.remove()
+  ###
+  remove: ->
+    if @is_invalid()
+      return null
+    else
+      return @_tree._remove_node(this)
+
+
 
 ###
   The AVL-tree is the interface with which the user manipulates the tree
@@ -250,34 +264,20 @@ class AVLTree
   ###
   insert: (key, value = null) ->
     if @is_empty()
-      return @root = new AVLNode(key, value)
+      return @root = new AVLNode(this, key, value)
 
     x = @search(key)
     c = @_comparator(x.key, key)
     if c is 0
       return null
     else
-      n = new AVLNode(key, value)
+      n = new AVLNode(this, key, value)
       x._connect_child(n, if c > 0 then _left else _right)
       @_restore_balance(x)
       return n
 
-  ###
-    Removes a node with given key from the tree and returns its value
-    or null if no such node exists.
-
-    Any reference to a removed node becomes invalid. An invalid node has all
-    its properties (including its key and value) be set to null.
-  ###
-  remove: (key) ->
-    if @is_empty()
-      return null
-
-    x = @search(key)
-    c = @_comparator(x.key, key)
-    if c isnt 0
-      return null
-    else if x.left()? and x.right()?
+  _remove_node: (x) ->
+    if x.left()? and x.right()?
       subtree = new AVLTree(@_comparator)
       subtree.root = x.left()
       y = subtree.search(x.key)
@@ -301,6 +301,26 @@ class AVLTree
     v = x.value
     x._invalidate()
     return v
+
+  ###
+    Removes a node with given key from the tree and returns its value
+    or null if no such node exists.
+
+    Any reference to a removed node becomes invalid. An invalid node has all
+    its properties (including its key and value) be set to null.
+
+    You may also remove a node directly, @see AVLNode.remove()
+  ###
+  remove: (key) ->
+    if @is_empty()
+      return null
+    x = @search(key)
+    c = @_comparator(x.key, key)
+    if c isnt 0
+      return null
+    else
+      return @_remove_node(x)
+
 
 root = this
 if module?.exports?

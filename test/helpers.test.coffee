@@ -69,6 +69,8 @@ exports.it_should_be_invalid = (node) ->
     (node.key?).should.be.equal false
   it 'should invalidate node\'s value', ->
     (node.value?).should.be.equal false
+  it 'should have the invalid node flag', ->
+    node.is_invalid().should.be.equal true
 
 exports.arrays_are_equal = (a, b) ->
   if a is b
