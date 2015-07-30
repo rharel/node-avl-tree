@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rahrel/node-avl-tree.git"
+    "url": "https://github.com/rharel/node-avl-tree.git"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "/blob/master/LICENSE-MIT"
+      "url": "/LICENSE.txt"
     }
   ],
   "devDependencies": {

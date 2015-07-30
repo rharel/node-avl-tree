@@ -1,16 +1,14 @@
 # Project-specific excludes
-*.js
-!gruntfile.js
-*.js.map
+lib/*.js
+lib/*.js.map
+test/*.js
+test/*.js.map
 
 # Platform-specific excludes
 thumbs.db
-.DS_Store
 
 # Node.js-specific excludes
 node_modules
-npm-debug.log
 
 # Code editor-specific excludes
-*.sublime-*
 .idea

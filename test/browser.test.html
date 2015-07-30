@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="../dist/avl.min.js"></script>
+    <title>node-avl-tree/readme.test.html</title>
+</head>
+<body>
+<script>
+    var t = new AVLTree();
+    t.insert(1, 'hello');
+    t.insert(2, 'world');
+
+    document.write(t.search(1).value + ' ' + t.search(2).value);
+</script>
+</body>
+</html>
