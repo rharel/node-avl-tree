@@ -15,7 +15,19 @@ module.exports = function(grunt) {
     source_files: [ '<%= lib_dir %>**/*.coffee' ],
     test_files: '<%= test_dir %>**/*.test.coffee',
 
-    
+    clean: {
+      all: {
+        src: [
+          '<%= lib_dir %>**/*.js',
+          '<%= lib_dir %>**/*.js.map',
+          '<%= test_dir %>**/*.js',
+          '<%= test_dir %>**/*.js.map',
+          '<%= dist_dir %>**/*.js',
+          '<%= dist_dir %>**/*.js.map'
+        ]
+      }
+    },
+
     coffeelint: {
       options: {
         configFile: 'coffeelint.json'
