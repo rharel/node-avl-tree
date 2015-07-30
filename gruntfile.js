@@ -49,7 +49,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             src: ['<%= test_files %>'],
-            ext: '.js'
+            ext: '.test.js'
           }
         ]
       },
@@ -58,6 +58,20 @@ module.exports = function(grunt) {
           '<%= dist_dir %>/avl.js': '<%= lib_dir %>/avl.coffee'
         }
       }
+    },
+
+    mochacli: {
+      options: {
+        require: ['should'],
+        reporter: 'spec',
+        bail: true
+      },
+      unit: ['<%= test_dir %>/avl_unit.test.js'],
+      integration: ['<%= test_dir %>/avl_integration.test.js'],
+      all: [
+        '<%= test_dir %>/avl_unit.test.js',
+        '<%= test_dir %>/avl_integration.test.js'
+      ]
     }
   };
 
