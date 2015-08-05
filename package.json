@@ -1,6 +1,7 @@
 {
   "name": "node-avl-tree",
   "description": "AVL-tree for Node.js and the browser.",
+  "license": "MIT",
   "version": "0.1.1",
   "homepage": "https://github.com/rharel/node-avl-tree",
   "author": {
